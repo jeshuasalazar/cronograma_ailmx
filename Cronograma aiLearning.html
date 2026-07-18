@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>aiLearning — Cronograma de Actividades · Julio 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ai-blue:#2D88E8;
+    --ai-blue-deep:#1A5FB4;
+    --ai-blue-soft:#E6F0FB;
+    --ink:#0E1B2C;
+    --ink-2:#1F2D42;
+    --mute:#6B7484;
+    --line:#E8E5DD;
+    --line-soft:#F0EDE5;
+    --cloud:#F4F2EC;
+    --paper:#FBFAF6;
+    --white:#FFFFFF;
+    --coral:#FF6B47;
+    --sage:#6B9080;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  doc-page:not(:defined){visibility:hidden}
+  html{font-family:'DM Sans',system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+  a{color:var(--ai-blue-deep)}
+  a:hover{color:var(--ai-blue)}
+  .display{font-family:'Space Grotesk',sans-serif;letter-spacing:-0.02em;font-weight:600}
+  .mono{font-family:'JetBrains Mono',monospace}
+
+  /* Running header */
+  .run-head{display:flex;align-items:center;justify-content:space-between;padding:10px 0 12px;border-bottom:1px solid var(--line)}
+  .run-head .l{display:flex;align-items:center;gap:10px}
+  .run-head img{height:30px;width:auto;object-fit:contain}
+  .run-head .doc-name{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+  .run-head .r{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+
+  /* Running footer */
+  .run-foot{display:flex;align-items:center;justify-content:space-between;padding:10px 0 0;border-top:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+  .run-foot .dot{width:7px;height:7px;border-radius:50%;background:var(--ai-blue);display:inline-block;margin-right:7px;vertical-align:middle}
+
+  /* Masthead */
+  .mast{display:grid;grid-template-columns:1.35fr .65fr;gap:0;border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:22px}
+  .mast .m-left{padding:26px 30px;background:var(--white)}
+  .mast .eyebrow{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.16em;color:var(--ai-blue-deep);font-weight:500;margin-bottom:12px}
+  .mast h1{font-family:'Space Grotesk',sans-serif;font-size:38px;line-height:1;letter-spacing:-0.035em;font-weight:600;margin-bottom:14px}
+  .mast h1 em{font-style:normal;color:var(--ai-blue)}
+  .mast .sub{color:var(--ink-2);font-size:13.5px;max-width:520px;line-height:1.5}
+  .mast .m-right{background:var(--ink);color:#fff;padding:26px 28px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+  .mast .m-right::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 100% 0%,rgba(45,136,232,.35),transparent 60%);pointer-events:none}
+  .mast .m-right .period-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8fb8e8;margin-bottom:6px}
+  .mast .m-right .period{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:600;letter-spacing:-0.02em;line-height:1.05}
+  .mast .m-right .period small{display:block;font-size:13px;color:#cfd5e0;font-weight:400;margin-top:4px;font-family:'DM Sans',sans-serif}
+  .mast .m-right .owners{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+
+  /* KPI strip */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+  .kpi{border:1px solid var(--line);border-radius:12px;padding:16px 18px;background:var(--white)}
+  .kpi .num{font-family:'Space Grotesk',sans-serif;font-size:30px;font-weight:600;letter-spacing:-0.03em;line-height:1}
+  .kpi .num.blue{color:var(--ai-blue)}
+  .kpi .num.coral{color:var(--coral)}
+  .kpi .num.sage{color:var(--sage)}
+  .kpi .lab{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);margin-top:8px}
+
+  /* Pills */
+  .pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.05em;text-transform:uppercase;font-weight:500;white-space:nowrap}
+  .pill.owner{background:var(--ai-blue-soft);color:var(--ai-blue-deep)}
+  .m-right .pill.owner{background:rgba(255,255,255,.14);color:#dbe9fb}
+  .pill.dot::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.7}
+
+  /* Section title */
+  .sec-title{display:flex;align-items:baseline;gap:12px;margin:6px 0 14px}
+  .sec-title .n{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ai-blue-deep);letter-spacing:.1em}
+  .sec-title h2{font-family:'Space Grotesk',sans-serif;font-size:19px;font-weight:600;letter-spacing:-0.02em}
+
+  /* Schedule table */
+  table.sched{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  table.sched thead th{background:var(--ink);color:#fff;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.09em;text-transform:uppercase;font-weight:500;text-align:left;padding:11px 12px;vertical-align:middle}
+  table.sched thead th.c-day{width:52px;text-align:center}
+  table.sched tbody td{padding:13px 12px;vertical-align:top;border-top:1px solid var(--line);font-size:11px;line-height:1.42;color:var(--ink-2)}
+  table.sched tbody tr:nth-child(even) td{background:var(--cloud)}
+  table.sched tbody tr{break-inside:avoid}
+  td.day{text-align:center;vertical-align:middle}
+  .day-badge{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:var(--ai-blue);color:#fff;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px}
+  .cell-title{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:12px;letter-spacing:-0.01em;color:var(--ink);margin-bottom:5px;line-height:1.25}
+  .cell-note{color:var(--ink-2);font-size:10.5px;line-height:1.4}
+  .cell-meta{margin-top:7px}
+  .date-tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.03em;color:var(--ai-blue-deep);background:var(--ai-blue-soft);padding:2px 7px;border-radius:6px}
+  .empty{color:var(--mute);font-family:'JetBrains Mono',monospace;font-size:10px;opacity:.6}
+  .status{display:inline-flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.05em;text-transform:uppercase;font-weight:500}
+  .status::before{content:"";width:7px;height:7px;border-radius:50%}
+  .status.ok{color:var(--sage)} .status.ok::before{background:var(--sage)}
+  .status.wait{color:var(--coral)} .status.wait::before{background:var(--coral)}
+  .status.prog{color:var(--ai-blue-deep)} .status.prog::before{background:var(--ai-blue)}
+
+  .legend{display:flex;flex-wrap:wrap;gap:18px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+  .legend .li{display:flex;align-items:center;gap:7px;font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--mute)}
+  .legend .sw{width:9px;height:9px;border-radius:50%}
+
+  @media print{ table.sched thead th{-webkit-print-color-adjust:exact;print-color-adjust:exact} }
+</style>
+</head>
+<body>
+<doc-page size="letter" orientation="landscape" margin="0.5in">
+  <div slot="header" class="run-head">
+    <div class="l">
+      <img src="assets/logo-lockup.png" alt="aiLearning" />
+      <span class="doc-name">Cronograma de Actividades</span>
+    </div>
+    <div class="r">Julio 2026 · Operaciones &amp; Alianzas</div>
+  </div>
+  <div slot="footer" class="run-foot">
+    <span><span class="dot"></span>aiLearning® — Documento interno</span>
+    <span>Confidencial · v.2026-07</span>
+  </div>
+
+  <div class="mast">
+    <div class="m-left">
+      <div class="eyebrow">Programa Operativo · Julio 2026</div>
+      <h1 class="display">Cronograma de <em>Actividades</em></h1>
+      <p class="sub">Seguimiento diario de objetivos, tareas, tiempos y avances del equipo aiLearning: capacitaciones, alianzas estratégicas, apertura bancaria y lanzamiento de plataforma.</p>
+    </div>
+    <div class="m-right">
+      <div>
+        <div class="period-label">Periodo de ejecución</div>
+        <div class="period">01 – 15 Jul<small>Ciclo operativo · Semana 1 &amp; 2</small></div>
+      </div>
+      <div class="owners">
+        <span class="pill owner">CP Blake</span>
+        <span class="pill owner">CP Roberto</span>
+        <span class="pill owner">JHUA</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi"><div class="num blue">8</div><div class="lab">Días con actividad</div></div>
+    <div class="kpi"><div class="num">4</div><div class="lab">Frentes estratégicos</div></div>
+    <div class="kpi"><div class="num sage">3</div><div class="lab">Avances confirmados</div></div>
+    <div class="kpi"><div class="num coral">4</div><div class="lab">En espera / seguimiento</div></div>
+  </div>
+
+  <div class="sec-title"><span class="n">01</span><h2 class="display">Registro diario de ejecución</h2></div>
+
+  <table class="sched">
+    <thead>
+      <tr>
+        <th class="c-day">Día</th>
+        <th>Objetivos del día</th>
+        <th>Tareas principales</th>
+        <th>Tiempos estimados</th>
+        <th>Materiales necesarios</th>
+        <th>Avances del día</th>
+        <th>Dificultades</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="day"><span class="day-badge">1</span></td>
+        <td><div class="cell-title">Conseguir dar capacitaciones</div><div class="cell-meta"><span class="pill owner">CP Blake</span></div></td>
+        <td><div class="cell-note">Convencer a CP Herrera.</div><div class="cell-meta"><span class="pill owner">CP Roberto</span></div></td>
+        <td><div class="cell-note">Una semana.</div><div class="cell-meta"><span class="date-tag">01 – 07 JUL 2026</span></div><div class="cell-meta"><span class="pill owner">CP Roberto</span></div></td>
+        <td><div class="cell-note">Desarrollo del temario y días en que se dará la capacitación.</div><div class="cell-meta"><span class="pill owner">CP Roberto</span></div></td>
+        <td><div class="cell-note">Ya se entregó temario, desarrollo y días.</div><div class="cell-meta"><span class="status ok">Completado</span></div></td>
+        <td><span class="status ok">Ninguna</span></td>
+      </tr>
+      <tr>
+        <td class="day"><span class="day-badge">3</span></td>
+        <td><div class="cell-title">Recuperar la cuenta de BBVA</div><div class="cell-meta"><span class="pill owner">JHUA</span></div></td>
+        <td><div class="cell-note">Ir al banco y dar seguimiento.</div><div class="cell-meta"><span class="pill owner">JHUA</span></div></td>
+        <td><div class="cell-note">Una semana.</div><div class="cell-meta"><span class="date-tag">03 – 13 JUL 2026</span></div></td>
+        <td><span class="empty">—</span></td>
+        <td><div class="cell-note">Se acudió 2 veces; se mantiene contacto con BBVA.</div><div class="cell-meta"><span class="status prog">En proceso</span></div></td>
+        <td><div class="cell-note">Esperamos respuesta.</div><div class="cell-meta"><span class="status wait">En espera</span></div></td>
+      </tr>
+      <tr>
+        <td class="day"><span class="day-badge">5</span></td>
+        <td><div class="cell-title">Santander — opción de apertura</div><div class="cell-meta"><span class="pill owner">CP Blake</span></div></td>
+        <td><div class="cell-note">Se checaron los requisitos necesarios.</div><div class="cell-meta"><span class="pill owner">CP Blake</span></div></td>
+        <td><div class="cell-note">Entre 10 y 15 días para la apertura.</div><div class="cell-meta"><span class="pill owner">CP Blake</span></div></td>
+        <td><div class="cell-note">Inversión mínima de $15,000 MXN que permanecen durante 3 meses.</div><div class="cell-meta"><span class="pill owner">CP Blake</span></div></td>
+        <td><div class="cell-note">Se espera que la resolución de BBVA sea favorable.</div><div class="cell-meta"><span class="status wait">En espera</span></div></td>
+        <td><div class="cell-note">Tiempos y papeleo.</div><div class="cell-meta"><span class="status wait">Riesgo</span></div></td>
+      </tr>
+      <tr>
+        <td class="day"><span class="day-badge">7</span></td>
+        <td><div class="cell-title">Página aiLearning para el evento LUMBRERA</div><div class="cell-meta"><span class="pill owner">JHUA</span></div></td>
+        <td><div class="cell-note">Estructurar la página lo más accesible posible para los usuarios y probarla con la capacitación de Lumbrera.</div><div class="cell-meta"><span class="pill owner">JHUA</span></div></td>
+        <td><div class="cell-note">Se espera avance o entrega final.</div><div class="cell-meta"><span class="date-tag">07 – 15 JUL 2026</span></div></td>
+        <td><span class="empty">—</span></td>
+        <td><div class="cell-note">Mostró los avances: ya es posible entrar desde celular y computadora.</div><div class="cell-meta"><span class="status ok">Avance validado</span></div></td>
+        <td><span class="empty">—</span></td>
+      </tr>
+      <tr>
+        <td class="day"><span class="day-badge">9</span></td>
+        <td><div class="cell-title">AMCP — reunión con el presidente Daniel</div><div class="cell-meta"><span class="pill owner">CP Blake</span></div></td>
+        <td><div class="cell-note">Enviar desde el correo de aiLearning: programa, temario, horas y documentos necesarios.</div><div class="cell-meta"><span class="pill owner">CP Roberto</span></div></td>
+        <td><div class="cell-note">2 días.</div><div class="cell-meta"><span class="date-tag">09 – 10 JUL 2026</span></div><div class="cell-meta"><span class="pill owner">CP Roberto</span></div></td>
+        <td><div class="cell-note">Desarrollo del temario y días en que se dará la capacitación.</div><div class="cell-meta"><span class="pill owner">CP Roberto</span></div></td>
+        <td><span class="empty">—</span></td>
+        <td><span class="empty">—</span></td>
+      </tr>
+      <tr>
+        <td class="day"><span class="day-badge">10</span></td>
+        <td><div class="cell-title">Reunión con CP Herrera</div></td>
+        <td><div class="cell-note">Concretar alianza y habilitar el uso de la plataforma de aiLearning.</div><div class="cell-meta"><span class="pill owner">CP Roberto</span></div></td>
+        <td><span class="empty">—</span></td>
+        <td><div class="cell-note">Página ya disponible.</div><div class="cell-meta"><span class="status ok">Listo</span></div></td>
+        <td><span class="empty">—</span></td>
+        <td><span class="empty">—</span></td>
+      </tr>
+      <tr>
+        <td class="day"><span class="day-badge">11</span></td>
+        <td><div class="cell-title">SUSY de CONTPAQ — sin respuesta, reintentar</div><div class="cell-meta"><span class="pill owner">CP Blake</span></div></td>
+        <td><div class="cell-note">Mantener contacto para explorar posibles alianzas.</div><div class="cell-meta"><span class="pill owner">CP Blake</span></div></td>
+        <td><div class="cell-note">Insistir.</div><div class="cell-meta"><span class="date-tag">12 – 15 JUL 2026</span></div><div class="cell-meta"><span class="pill owner">CP Blake</span></div></td>
+        <td><div class="cell-note">Se envió el resumen de la plática y/o curso.</div><div class="cell-meta"><span class="pill owner">JHUA</span></div></td>
+        <td><div class="cell-note">Susy comenta que espera respuesta de sus desarrolladoras.</div><div class="cell-meta"><span class="status wait">En espera</span></div></td>
+        <td><span class="empty">—</span></td>
+      </tr>
+      <tr>
+        <td class="day"><span class="day-badge">12</span></td>
+        <td><div class="cell-title">Retroalimentación de la grabación</div><div class="cell-note" style="margin-top:4px">Quedó el CP Roberto de dar retro de la reunión anterior.</div></td>
+        <td><div class="cell-note">Observaciones, sugerencias, cambios, etc.</div><div class="cell-meta"><span class="pill owner">CP Roberto</span></div></td>
+        <td><span class="empty">—</span></td>
+        <td><span class="empty">—</span></td>
+        <td><span class="empty">—</span></td>
+        <td><span class="empty">—</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="legend">
+    <div class="li"><span class="sw" style="background:var(--sage)"></span>Completado / Avance validado</div>
+    <div class="li"><span class="sw" style="background:var(--ai-blue)"></span>En proceso</div>
+    <div class="li"><span class="sw" style="background:var(--coral)"></span>En espera / Riesgo</div>
+    <div class="li" style="margin-left:auto">aiLearning® · Acelere y escale su operación con IA aplicada</div>
+  </div>
+</doc-page>
+<script src="doc-page.js"></script>
+</body>
+</html>
