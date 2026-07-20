@@ -45,6 +45,9 @@ export function mountTeamAdmin(root, ctx) {
   overlay.addEventListener("click", (e) => {
     if (e.target === overlay) close();
   });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && overlay.classList.contains("show")) close();
+  });
 
   function renderTab() {
     body.innerHTML = tab === "members" ? memberRowFormTemplate() : frontRowFormTemplate();

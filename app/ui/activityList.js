@@ -215,7 +215,11 @@ export function mountActivityList(root, ctx, { filters, countEl }) {
     if (countEl) countEl.textContent = `${items.length} de ${total}${state.optimistic ? " · guardando…" : ""}`;
     const board = root.querySelector("#board");
     if (!items.length) {
-      board.innerHTML = `<div class="empty-state">Sin actividades para este filtro.</div>`;
+      board.innerHTML = `<div class="empty-state">
+        <div class="es-ic">${icon("filter", 24)}</div>
+        <div class="es-t">Sin actividades para este filtro</div>
+        <div class="es-s">Ajusta la búsqueda o limpia los filtros para ver más.</div>
+      </div>`;
     } else {
       board.innerHTML = items.map(rowHTML).join("");
       bind();

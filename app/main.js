@@ -3,6 +3,7 @@
 // app/ui/*.js components, each mounted into a "slot" element of the shell
 // below and driven by app/store.js query subscriptions.
 import "./styles.css";
+import { initTheme } from "./theme.js";
 import { isDemoMode } from "./supabaseClient.js";
 import { initAuth, onAuthChange, getCurrentMember, signOut } from "./auth.js";
 import { listFronts, listMembers, subscribe as repoSubscribe } from "./repo/index.js";
@@ -171,6 +172,7 @@ document.addEventListener("click", (e) => {
 });
 
 async function boot() {
+  initTheme();
   renderGateLoading();
   const session = await initAuth();
   lastUserKey = session?.user?.id ?? null;

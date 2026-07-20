@@ -85,10 +85,11 @@ export function hexToRgb(hex) {
   return [m[1], m[2], m[3]].map((h) => parseInt(h, 16)).join(", ");
 }
 
-/** Inline style string for a "front" chip tinted with the front's color. */
+/** Inline style string for a "front" chip tinted with the front's color.
+ *  Exposes the raw hex as the --fc custom property; .front derives the
+ *  theme-aware text/border/background colors from it via color-mix(). */
 export function frontChipStyle(hex) {
-  const rgb = hexToRgb(hex || "#7fc0ff");
-  return `color:${hex || "#7fc0ff"};border-color:rgba(${rgb},.35);background:rgba(${rgb},.1)`;
+  return `--fc:${hex || "#7fc0ff"}`;
 }
 
 export function avatarStyle(hex) {
