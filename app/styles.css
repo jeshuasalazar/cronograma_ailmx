@@ -186,6 +186,12 @@ button{ touch-action:manipulation }
 .task{ border:1px solid var(--stroke); border-radius:14px; background:var(--fill-05); overflow:hidden; transition:border-color .15s,background .15s }
 .task:hover{ border-color:var(--stroke-2); box-shadow:0 8px 24px -18px var(--shadow-color) }
 .task.overdue{ border-color:color-mix(in oklab, var(--coral) 40%, transparent) }
+/* Completed activities read as "done at a glance": faint green wash, green
+   left edge, muted title + a check before it. */
+.task.done{ border-color:color-mix(in oklab, var(--green) 26%, transparent); background:color-mix(in oklab, var(--green) 6%, transparent); box-shadow:inset 3px 0 0 color-mix(in oklab, var(--green) 60%, transparent) }
+.task.done:hover{ box-shadow:inset 3px 0 0 color-mix(in oklab, var(--green) 60%, transparent), 0 8px 24px -18px var(--shadow-color) }
+.task.done .t-title{ color:var(--txt-2) }
+.done-check{ display:inline-flex; align-items:center; justify-content:center; width:16px; height:16px; border-radius:50%; background:color-mix(in oklab, var(--green) 22%, transparent); color:var(--green); flex:none }
 .task-row{ display:grid; grid-template-columns:auto 1fr auto; gap:14px; align-items:center; padding:14px 16px; cursor:pointer }
 .daybadge{ width:44px; height:44px; border-radius:12px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:linear-gradient(160deg,color-mix(in oklab, var(--blue) 28%, transparent),color-mix(in oklab, var(--blue) 8%, transparent)); border:1px solid color-mix(in oklab, var(--blue) 35%, transparent); flex:none }
 .daybadge .dd{ font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:17px; line-height:1; color:var(--blue-2) }
@@ -213,6 +219,9 @@ button{ touch-action:manipulation }
 
 .pop{ position:absolute; top:calc(100% + 6px); right:0; z-index:300; min-width:168px; padding:6px; border:1px solid var(--stroke-2); border-radius:12px; background:var(--surface-2); box-shadow:var(--shadow-pop); display:none; flex-direction:column; gap:2px }
 .pop.show{ display:flex }
+/* Portaled to <body> and placed via inline fixed coords (see activityList.js) —
+   clear the base right/absolute offsets so left/top win. */
+.pop-portal{ position:fixed; right:auto; top:auto; margin:0 }
 .pop button{ cursor:pointer; text-align:left; background:none; border:none; padding:9px 11px; min-height:34px; border-radius:8px; color:var(--txt); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.05em; text-transform:uppercase; display:flex; align-items:center; gap:9px }
 .pop button:hover{ background:var(--glass-2) }
 .pop button .d{ width:8px; height:8px; border-radius:50%; flex:none }
@@ -359,7 +368,10 @@ button{ touch-action:manipulation }
   .kpi .num{ font-size:26px }
   .layout{ gap:12px; margin-top:14px }
   .task-row{ grid-template-columns:auto 1fr; row-gap:10px }
-  .t-right{ grid-column:1 / -1; flex-direction:row; justify-content:space-between; align-items:center }
+  /* Ring (when present) + status pill cluster to the right, consistently,
+     whether or not the ring is rendered — so a lone "Completado" pill no
+     longer sits orphaned on the left. */
+  .t-right{ grid-column:1 / -1; flex-direction:row; justify-content:flex-end; align-items:center }
   .dgrid, .frow2, .frow3{ grid-template-columns:1fr }
   .toolbar{ gap:8px; padding:12px 14px }
   .filters-toggle{ display:inline-flex }

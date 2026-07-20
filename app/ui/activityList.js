@@ -60,17 +60,6 @@ async function fetchList(filters, pageSize) {
   return { items: items.slice(0, pageSize), total: items.length, page: 1, pageSize };
 }
 
-function statusPopHTML(activityId) {
-  return `<div class="pop" id="pop-status-${activityId}">${Object.entries(STATUS)
-    .map(([k, v]) => `<button data-set-status="${activityId}|${k}"><span class="d" style="background:${v.color}"></span>${v.label}</button>`)
-    .join("")}</div>`;
-}
-function priorityPopHTML(activityId) {
-  return `<div class="pop" id="pop-priority-${activityId}">${Object.entries(PRIORITY)
-    .map(([k, v]) => `<button data-set-priority="${activityId}|${k}"><span class="d" style="background:${v.color}"></span>${v.label}</button>`)
-    .join("")}</div>`;
-}
-
 function skeletonRows() {
   return Array.from({ length: 5 }).map(() => `<div class="sk sk-row"></div>`).join("");
 }
@@ -80,6 +69,64 @@ export function mountActivityList(root, ctx, { filters, countEl }) {
   let pageSize = PAGE_SIZE_STEP;
   let query = getQuery(`activities:list:${JSON.stringify({ ...currentFilters, pageSize })}`, () => fetchList(currentFilters, pageSize));
   let unsub = null;
+
+  // Status/priority quick-pick popover, portaled to <body>. The old
+  // per-row inline `.pop` rendered but got clipped inside the card, which
+  // has `overflow:hidden`, and the surrounding `.panel` has both
+  // `overflow:hidden` and `backdrop-filter` (a containing block) — so the
+  // dropdown "no se desplegaba al frente". A single body-level element,
+  // fixed-positioned from the trigger's rect, escapes all of that.
+  const popover = document.createElement("div");
+  popover.className = "pop pop-portal";
+  document.body.appendChild(popover);
+
+  function closePop() {
+    popover.classList.remove("show");
+    popover.removeAttribute("data-for");
+  }
+
+  function openPop(type, id, anchorEl) {
+    const key = `${type}:${id}`;
+    if (popover.classList.contains("show") && popover.dataset.for === key) {
+      closePop();
+      return;
+    }
+    const entries = type === "status" ? Object.entries(STATUS) : Object.entries(PRIORITY);
+    popover.innerHTML = entries
+      .map(([k, v]) => `<button type="button" data-pick="${k}"><span class="d" style="background:${v.color}"></span>${escapeHtml(v.label)}</button>`)
+      .join("");
+    popover.querySelectorAll("[data-pick]").forEach((btn) =>
+      btn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        const val = btn.dataset.pick;
+        closePop();
+        if (type === "status") await changeStatus(id, val);
+        else await changePriority(id, val);
+      }),
+    );
+    popover.dataset.for = key;
+    popover.style.position = "fixed";
+    popover.classList.add("show");
+    // Measure after showing, then place right-aligned under the trigger,
+    // flipping above it if it would run off the bottom of the viewport.
+    const r = anchorEl.getBoundingClientRect();
+    const pw = popover.offsetWidth;
+    const ph = popover.offsetHeight;
+    let left = Math.min(r.right - pw, window.innerWidth - pw - 8);
+    if (left < 8) left = 8;
+    let top = r.bottom + 6;
+    if (top + ph > window.innerHeight - 8) top = Math.max(8, r.top - ph - 6);
+    popover.style.left = `${left}px`;
+    popover.style.top = `${top}px`;
+  }
+
+  // Dismiss on scroll/resize so the popover never floats detached from
+  // its (now moved) trigger.
+  const dismissPop = () => {
+    if (popover.classList.contains("show")) closePop();
+  };
+  window.addEventListener("scroll", dismissPop, true);
+  window.addEventListener("resize", dismissPop);
 
   function ownerHTML(id) {
     const m = ctx.getMembers().find((x) => x.id === id);
@@ -105,27 +152,22 @@ export function mountActivityList(root, ctx, { filters, countEl }) {
     const pr = PRIORITY[a.priority] || PRIORITY.medium;
     const db = dayBadge(a.dueDate || a.startDate);
     const overdue = isOverdue(a);
-    return `<div class="task ${overdue ? "overdue" : ""}" data-row="${a.id}">
+    const done = a.status === "done";
+    return `<div class="task ${overdue ? "overdue" : ""} ${done ? "done" : ""}" data-row="${a.id}">
       <div class="task-row" data-toggle="${a.id}">
         <div class="daybadge"><span class="dd">${db.dd}</span><span class="mm">${db.mm}</span></div>
         <div class="t-main">
-          <div class="t-title">${escapeHtml(a.title)}${overdue ? `<span class="overdue-tag">${icon("alert", 11)} Vencida</span>` : ""}</div>
+          <div class="t-title">${done ? `<span class="done-check">${icon("check", 12)}</span>` : ""}${escapeHtml(a.title)}${overdue ? `<span class="overdue-tag">${icon("alert", 11)} Vencida</span>` : ""}</div>
           <div class="t-meta">
             ${frontHTML(a.front)}
             ${assigneesHTML(a.assignees)}
-            <div style="position:relative">
-              <button type="button" class="prio-tag" data-prio="${a.id}" style="color:${pr.color};border-color:${pr.color}66;cursor:pointer">${pr.label}</button>
-              ${priorityPopHTML(a.id)}
-            </div>
+            <button type="button" class="prio-tag" data-prio="${a.id}" style="color:${pr.color};border-color:${pr.color}66;cursor:pointer">${pr.label}</button>
             <span class="datetag">${a.dueDate ? `vence ${formatDate(a.dueDate)}` : "sin fecha"}</span>
           </div>
         </div>
         <div class="t-right">
           ${a.status === "prog" || a.status === "wait" ? `<div class="ring" style="--p:${a.progress};--rc:${st.color}"><span>${a.progress}</span></div>` : ""}
-          <div style="position:relative">
-            <button class="stat ${st.cls || `s-${a.status}`}" data-stat="${a.id}"><span class="d"></span>${st.label}${icon("chevronDown", 11, 'class="caret"')}</button>
-            ${statusPopHTML(a.id)}
-          </div>
+          <button class="stat ${st.cls || `s-${a.status}`}" data-stat="${a.id}"><span class="d"></span>${st.label}${icon("chevronDown", 11, 'class="caret"')}</button>
         </div>
       </div>
     </div>`;
@@ -134,42 +176,20 @@ export function mountActivityList(root, ctx, { filters, countEl }) {
   function bind() {
     root.querySelectorAll("[data-toggle]").forEach((el) =>
       el.addEventListener("click", (e) => {
-        if (e.target.closest(".stat") || e.target.closest(".pop") || e.target.closest("[data-prio]")) return;
+        if (e.target.closest(".stat") || e.target.closest("[data-prio]")) return;
         ctx.openDetail(el.dataset.toggle);
       }),
     );
     root.querySelectorAll("[data-prio]").forEach((b) =>
       b.addEventListener("click", (e) => {
         e.stopPropagation();
-        const pop = root.querySelector(`#pop-priority-${b.dataset.prio}`);
-        const wasOpen = pop.classList.contains("show");
-        root.querySelectorAll(".pop").forEach((p) => p.classList.remove("show"));
-        if (!wasOpen) pop.classList.add("show");
-      }),
-    );
-    root.querySelectorAll("[data-set-priority]").forEach((b) =>
-      b.addEventListener("click", async (e) => {
-        e.stopPropagation();
-        const [id, priority] = b.dataset.setPriority.split("|");
-        root.querySelectorAll(".pop").forEach((p) => p.classList.remove("show"));
-        await changePriority(id, priority);
+        openPop("priority", b.dataset.prio, b);
       }),
     );
     root.querySelectorAll("[data-stat]").forEach((b) =>
       b.addEventListener("click", (e) => {
         e.stopPropagation();
-        const pop = root.querySelector(`#pop-status-${b.dataset.stat}`);
-        const wasOpen = pop.classList.contains("show");
-        root.querySelectorAll(".pop").forEach((p) => p.classList.remove("show"));
-        if (!wasOpen) pop.classList.add("show");
-      }),
-    );
-    root.querySelectorAll("[data-set-status]").forEach((b) =>
-      b.addEventListener("click", async (e) => {
-        e.stopPropagation();
-        const [id, status] = b.dataset.setStatus.split("|");
-        root.querySelectorAll(".pop").forEach((p) => p.classList.remove("show"));
-        await changeStatus(id, status);
+        openPop("status", b.dataset.stat, b);
       }),
     );
   }
@@ -203,6 +223,7 @@ export function mountActivityList(root, ctx, { filters, countEl }) {
   }
 
   function renderState(state) {
+    closePop(); // the board is about to be rebuilt; drop any pop tied to a now-stale row
     if (state.status === "loading" || state.status === "idle") {
       if (countEl) countEl.textContent = "Cargando…";
       root.querySelector("#board").innerHTML = skeletonRows();
@@ -262,6 +283,12 @@ export function mountActivityList(root, ctx, { filters, countEl }) {
       pageSize = PAGE_SIZE_STEP;
       rebuildQuery();
     },
-    destroy: () => unsub?.(),
+    destroy: () => {
+      unsub?.();
+      closePop();
+      window.removeEventListener("scroll", dismissPop, true);
+      window.removeEventListener("resize", dismissPop);
+      popover.remove();
+    },
   };
 }
