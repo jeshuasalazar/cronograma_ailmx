@@ -28,6 +28,38 @@ let realtimeUnsub = null;
 let topbarUnmount = null;
 let sideUnmounts = [];
 
+// A single user action (e.g. editing a field that autosaves every 500ms,
+// or an update that also writes an activity_events row and touches
+// activity_assignees) can fan out into several near-simultaneous Realtime
+// events. Invalidating — and therefore refetching — once per raw event
+// let refetches pile up faster than they resolved under sustained use,
+// eventually wedging the app until a full page reload. Coalesce every
+// invalidation key seen within a short window into one `invalidate()`
+// call so a burst of related events costs one network round-trip per
+// query instead of one per event.
+const INVALIDATE_BATCH_MS = 300;
+let pendingInvalidations = new Set();
+let invalidateTimer = null;
+
+function batchInvalidate(keys) {
+  for (const k of keys) pendingInvalidations.add(k);
+  if (invalidateTimer) return;
+  invalidateTimer = setTimeout(() => {
+    invalidateTimer = null;
+    const keysToFlush = [...pendingInvalidations];
+    pendingInvalidations = new Set();
+    invalidate(keysToFlush);
+  }, INVALIDATE_BATCH_MS);
+}
+
+function clearPendingInvalidations() {
+  if (invalidateTimer) {
+    clearTimeout(invalidateTimer);
+    invalidateTimer = null;
+  }
+  pendingInvalidations = new Set();
+}
+
 function renderGateLoading() {
   appEl.innerHTML = `<div class="gate"><div class="gate-loading"><div class="spinner"></div>Cargando sesión…</div></div>`;
 }
@@ -81,26 +113,30 @@ function shellHTML() {
 function teardownPanel() {
   realtimeUnsub?.();
   realtimeUnsub = null;
+  clearPendingInvalidations();
   topbarUnmount?.();
   topbarUnmount = null;
   sideUnmounts.forEach((fn) => fn?.());
   sideUnmounts = [];
 }
 
+// Pure mapping from a single Realtime change to the invalidation keys it
+// implies — no side effects here; the caller (repoSubscribe callback
+// below) is responsible for batching these through batchInvalidate().
 function mapChangeToInvalidation(change) {
   const { table } = change || {};
-  if (table === "fronts") return invalidate(["fronts"]);
-  if (table === "team_members") return invalidate(["members"]);
+  if (table === "fronts") return ["fronts"];
+  if (table === "team_members") return ["members"];
   // activities → list + KPIs + detail (all keyed under the "activities:" prefix).
   // Every activity mutation in this app also logs an activity_events row, so we
   // proactively refresh the feed too rather than waiting for a separate
   // "events" realtime message that may not arrive for every backend.
-  if (table === "activities") return invalidate(["activities", "events"]);
+  if (table === "activities") return ["activities", "events"];
   // notes → detail (embedded notes array) + feed.
-  if (table === "notes") return invalidate(["activities", "events"]);
-  if (table === "events") return invalidate(["events"]);
+  if (table === "notes") return ["activities", "events"];
+  if (table === "events") return ["events"];
   // "*" — cross-tab localStorage sync or a bulk import: refresh everything.
-  return invalidate(["fronts", "members", "activities", "events"]);
+  return ["fronts", "members", "activities", "events"];
 }
 
 function mountPanel(session, me) {
@@ -146,7 +182,7 @@ function mountPanel(session, me) {
   sideUnmounts.push(mountFeed(document.getElementById("feed-slot"), document.getElementById("feed-cnt")));
   sideUnmounts.push(() => filtersApi.destroy());
 
-  realtimeUnsub = repoSubscribe(mapChangeToInvalidation);
+  realtimeUnsub = repoSubscribe((change) => batchInvalidate(mapChangeToInvalidation(change)));
 }
 
 async function handleSession(session) {

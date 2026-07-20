@@ -98,7 +98,7 @@ button{ touch-action:manipulation }
 @keyframes spin{ to{ transform:rotate(360deg) } }
 
 /* ── Top bar ───────────────────────────────────────────────────────── */
-.topbar{ display:flex; align-items:center; justify-content:space-between; gap:18px; padding:14px 20px; border:1px solid var(--stroke); border-radius:16px; background:var(--glass); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); position:sticky; top:14px; z-index:40; box-shadow:var(--shadow-bar) }
+.topbar{ display:flex; align-items:center; justify-content:space-between; gap:18px; padding:14px 20px; border:1px solid var(--stroke); border-radius:16px; background:var(--glass); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); position:sticky; top:14px; z-index:40; isolation:isolate; box-shadow:var(--shadow-bar) }
 .tb-l{ display:flex; align-items:center; gap:16px; min-width:0 }
 .tb-l img{ height:26px; width:auto; object-fit:contain; flex:none }
 .tb-sep{ width:1px; height:26px; background:var(--stroke-2); flex:none }
@@ -156,6 +156,8 @@ button{ touch-action:manipulation }
 .search input::placeholder{ color:var(--mute) }
 .selmini{ background:var(--well); border:1px solid var(--stroke); border-radius:10px; padding:8px 11px; font-size:12.5px; color:var(--txt); outline:none; min-height:38px }
 .selmini:focus{ border-color:var(--blue) }
+.chips-group{ display:flex; flex-direction:column; gap:6px }
+.chips-label{ font-size:9px; letter-spacing:.11em; text-transform:uppercase; color:var(--mute) }
 .chips{ display:flex; flex-wrap:wrap; gap:6px }
 .chip{ cursor:pointer; user-select:none; padding:7px 12px; min-height:30px; border-radius:999px; border:1px solid var(--stroke); background:transparent; color:var(--txt-2); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.05em; text-transform:uppercase; transition:all .15s; display:inline-flex; align-items:center; gap:6px }
 .chip:hover{ border-color:var(--stroke-2); color:var(--txt) }
@@ -209,7 +211,7 @@ button{ touch-action:manipulation }
 .stat.s-todo{ background:color-mix(in oklab, var(--txt-strong) 5%, transparent); color:var(--mute); border-color:var(--stroke) } .stat.s-todo .d{ background:var(--mute) }
 .caret{ color:var(--mute); transition:transform .2s; flex:none }
 
-.pop{ position:absolute; top:calc(100% + 6px); right:0; z-index:60; min-width:168px; padding:6px; border:1px solid var(--stroke-2); border-radius:12px; background:var(--surface-2); box-shadow:var(--shadow-pop); display:none; flex-direction:column; gap:2px }
+.pop{ position:absolute; top:calc(100% + 6px); right:0; z-index:300; min-width:168px; padding:6px; border:1px solid var(--stroke-2); border-radius:12px; background:var(--surface-2); box-shadow:var(--shadow-pop); display:none; flex-direction:column; gap:2px }
 .pop.show{ display:flex }
 .pop button{ cursor:pointer; text-align:left; background:none; border:none; padding:9px 11px; min-height:34px; border-radius:8px; color:var(--txt); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.05em; text-transform:uppercase; display:flex; align-items:center; gap:9px }
 .pop button:hover{ background:var(--glass-2) }
@@ -255,7 +257,7 @@ button{ touch-action:manipulation }
 .feed-more{ padding:4px 0 0 22px }
 
 /* ── Modal ─────────────────────────────────────────────────────────── */
-.overlay{ position:fixed; inset:0; background:var(--scrim); backdrop-filter:blur(6px); z-index:80; display:none; align-items:center; justify-content:center; padding:20px }
+.overlay{ position:fixed; inset:0; background:var(--scrim); backdrop-filter:blur(6px); z-index:400; display:none; align-items:center; justify-content:center; padding:20px }
 .overlay.show{ display:flex }
 .modal{ width:100%; max-width:560px; border:1px solid var(--stroke-2); border-radius:20px; background:var(--surface-raised); box-shadow:var(--shadow-lg); overflow:hidden; display:flex; flex-direction:column; max-height:92vh }
 .modal.wide{ max-width:720px }
@@ -290,9 +292,9 @@ button{ touch-action:manipulation }
 .swatch{ width:16px; height:16px; border-radius:5px; border:1px solid var(--stroke-2); flex:none }
 
 /* ── Drawer (activity detail) ─────────────────────────────────────── */
-.drawer-overlay{ position:fixed; inset:0; background:var(--scrim-2); backdrop-filter:blur(4px); z-index:85; display:none }
+.drawer-overlay{ position:fixed; inset:0; background:var(--scrim-2); backdrop-filter:blur(4px); z-index:410; display:none }
 .drawer-overlay.show{ display:block }
-.drawer{ position:fixed; top:0; right:0; bottom:0; width:min(480px,100vw); background:var(--surface-raised); border-left:1px solid var(--stroke-2); box-shadow:-40px 0 90px -30px var(--shadow-color); z-index:86; transform:translateX(100%); transition:transform .28s cubic-bezier(.22,1,.36,1); display:flex; flex-direction:column }
+.drawer{ position:fixed; top:0; right:0; bottom:0; width:min(480px,100vw); background:var(--surface-raised); border-left:1px solid var(--stroke-2); box-shadow:-40px 0 90px -30px var(--shadow-color); z-index:420; transform:translateX(100%); transition:transform .28s cubic-bezier(.22,1,.36,1); display:flex; flex-direction:column }
 .drawer.show{ transform:translateX(0) }
 .drawer-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:18px 20px; border-bottom:1px solid var(--stroke); flex:none }
 .drawer-head h3{ font-family:'Space Grotesk',sans-serif; font-size:16px; font-weight:600; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
@@ -321,15 +323,15 @@ button{ touch-action:manipulation }
 .save-state.err{ color:var(--coral) }
 
 /* ── Settings dropdown ─────────────────────────────────────────────── */
-.dropdown-wrap{ position:relative }
-.dropdown{ position:absolute; top:calc(100% + 8px); right:0; z-index:70; min-width:240px; padding:8px; border:1px solid var(--stroke-2); border-radius:14px; background:var(--surface-2); box-shadow:0 30px 70px -25px var(--shadow-color); display:none; flex-direction:column; gap:2px }
+.dropdown-wrap{ position:relative; isolation:isolate }
+.dropdown{ position:absolute; top:calc(100% + 8px); right:0; z-index:320; min-width:240px; padding:8px; border:1px solid var(--stroke-2); border-radius:14px; background:var(--surface-2); box-shadow:0 30px 70px -25px var(--shadow-color); display:none; flex-direction:column; gap:2px }
 .dropdown.show{ display:flex }
 .dropdown button{ cursor:pointer; text-align:left; background:none; border:none; padding:10px 12px; min-height:40px; border-radius:9px; color:var(--txt); font-size:12.5px; display:flex; align-items:center; gap:10px }
 .dropdown button:hover{ background:var(--glass-2) }
 .dropdown hr{ border:none; border-top:1px solid var(--stroke); margin:5px 4px }
 
 /* ── Toasts ────────────────────────────────────────────────────────── */
-.toast-host{ position:fixed; right:16px; bottom:16px; z-index:200; display:flex; flex-direction:column; gap:8px; max-width:min(360px,calc(100vw - 32px)) }
+.toast-host{ position:fixed; right:16px; bottom:16px; z-index:500; display:flex; flex-direction:column; gap:8px; max-width:min(360px,calc(100vw - 32px)) }
 .toast{ cursor:pointer; padding:12px 15px; border-radius:12px; font-size:12.5px; line-height:1.4; border:1px solid var(--stroke-2); background:var(--surface-2); box-shadow:0 20px 50px -20px var(--shadow-color); opacity:0; transform:translateY(8px); transition:opacity .2s,transform .2s }
 .toast.show{ opacity:1; transform:translateY(0) }
 .toast-success{ border-color:color-mix(in oklab, var(--green) 40%, transparent); color:color-mix(in oklab, var(--green) 45%, var(--txt)) }

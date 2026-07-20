@@ -103,10 +103,35 @@ export function getQuery(key, fetcher, opts = {}) {
     subscribe(cb) {
       entry.listeners.add(cb);
       cb(entry.state);
-      return () => entry.listeners.delete(cb);
+      return () => {
+        entry.listeners.delete(cb);
+        // Volatile keys (parametrized by filters/id/pagination — a new
+        // combo is minted constantly, e.g. activityList's per-filter key)
+        // are dropped from the cache once nobody's watching them anymore,
+        // so `store` doesn't grow forever and `invalidate()` doesn't have
+        // to sift through an ever-larger pile of dead entries every time.
+        // Long-lived keys ("fronts", "members", "activities:kpi",
+        // "events:global", etc.) are reused as-is across the whole
+        // session by design, so they're kept around (idle, no listeners)
+        // ready to serve cached data to the next subscriber.
+        if (entry.listeners.size === 0 && isVolatileKey(key)) {
+          store.delete(key);
+        }
+      };
     },
     refetch: () => triggerFetch(entry),
   };
+}
+
+// Key prefixes that are re-minted frequently (new filter combo, new open
+// activity, new pagination step) and never revisited with the exact same
+// key on purpose — safe (and necessary) to garbage-collect the moment
+// their last listener unsubscribes. Anything else is treated as a
+// long-lived, reusable cache entry and kept alive with no listeners.
+const VOLATILE_PREFIXES = ["activities:list:", "activities:events:", "activities:detail:"];
+
+function isVolatileKey(key) {
+  return VOLATILE_PREFIXES.some((p) => key.startsWith(p));
 }
 
 function matchesPrefix(entryKey, prefix) {

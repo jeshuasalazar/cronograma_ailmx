@@ -91,6 +91,14 @@ export function mountActivityList(root, ctx, { filters, countEl }) {
     if (!f) return "";
     return `<span class="front" style="${frontChipStyle(f.color)}">${escapeHtml(f.name)}</span>`;
   }
+  function assigneesHTML(assignees) {
+    const shown = assignees.slice(0, 2).map(ownerHTML).join("");
+    const rest = assignees.length - 2;
+    if (rest > 0) {
+      return `${shown}<span class="owner"><span class="ava" style="background:var(--fill-2);color:var(--txt)">+${rest}</span></span>`;
+    }
+    return shown;
+  }
 
   function rowHTML(a) {
     const st = STATUS[a.status] || STATUS.todo;
@@ -104,7 +112,7 @@ export function mountActivityList(root, ctx, { filters, countEl }) {
           <div class="t-title">${escapeHtml(a.title)}${overdue ? `<span class="overdue-tag">${icon("alert", 11)} Vencida</span>` : ""}</div>
           <div class="t-meta">
             ${frontHTML(a.front)}
-            ${a.assignees.map(ownerHTML).join("")}
+            ${assigneesHTML(a.assignees)}
             <div style="position:relative">
               <button type="button" class="prio-tag" data-prio="${a.id}" style="color:${pr.color};border-color:${pr.color}66;cursor:pointer">${pr.label}</button>
               ${priorityPopHTML(a.id)}
@@ -113,7 +121,7 @@ export function mountActivityList(root, ctx, { filters, countEl }) {
           </div>
         </div>
         <div class="t-right">
-          <div class="ring" style="--p:${a.progress};--rc:${st.color}"><span>${a.progress}</span></div>
+          ${a.status === "prog" || a.status === "wait" ? `<div class="ring" style="--p:${a.progress};--rc:${st.color}"><span>${a.progress}</span></div>` : ""}
           <div style="position:relative">
             <button class="stat ${st.cls || `s-${a.status}`}" data-stat="${a.id}"><span class="d"></span>${st.label}${icon("chevronDown", 11, 'class="caret"')}</button>
             ${statusPopHTML(a.id)}
