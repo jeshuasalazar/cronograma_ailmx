@@ -9,7 +9,8 @@ export function renderLogin(root) {
   root.innerHTML = `
     <div class="gate">
       <div class="gate-card">
-        <img class="gate-logo" src="/assets/logo-wordmark.png" alt="aiLearning" onerror="this.style.display='none'" />
+        <img class="gate-logo logo-on-dark" src="/assets/logo-white.png" alt="aiLearning" onerror="this.style.display='none'" />
+        <img class="gate-logo logo-on-light" src="/assets/logo-wordmark-trim.png" alt="aiLearning" onerror="this.style.display='none'" />
         <div class="gate-title display">Panel de Operaciones</div>
         <div class="gate-sub mono">Inicia sesión con tu cuenta del equipo</div>
         <form id="login-form" style="display:flex;flex-direction:column;gap:12px">

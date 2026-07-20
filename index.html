@@ -4,6 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>aiLearning — Panel de Operaciones</title>
+    <link rel="icon" type="image/png" href="/assets/logo-mark.png" />
+    <script>
+      (function () { try {
+        var m = localStorage.getItem("ail_ops_theme_v1");
+        var t = (m === "light" || m === "dark") ? m : (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+        document.documentElement.dataset.theme = t;
+      } catch (e) { document.documentElement.dataset.theme = "dark"; } })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
