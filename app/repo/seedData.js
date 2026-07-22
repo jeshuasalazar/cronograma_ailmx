@@ -26,6 +26,10 @@ function daysAgo(d) {
   return new Date(Date.now() - d * 86400000).toISOString();
 }
 
+function daysFromNow(d) {
+  return new Date(Date.now() + d * 86400000).toISOString();
+}
+
 /** @typedef {'todo'|'prog'|'wait'|'done'} ActivityStatus */
 /** @typedef {'low'|'medium'|'high'|'urgent'} ActivityPriority */
 
@@ -221,4 +225,58 @@ export const seedEvents = [
   { id: "a6-e1", activityId: "a6", actorId: "cp-roberto", kind: "status_changed", payload: { status: "prog" }, createdAt: daysAgo(2) },
   { id: "a7-e1", activityId: "a7", actorId: "cp-blake", kind: "status_changed", payload: { status: "wait" }, createdAt: daysAgo(2) },
   { id: "a8-e1", activityId: "a8", actorId: "cp-roberto", kind: "created", payload: { front: "Plataforma" }, createdAt: daysAgo(7) },
+];
+
+/**
+ * sessions seed — upcoming Zoom/manual sessions.
+ * @type {Array<{
+ *   id: string, title: string, description: string, startsAt: string,
+ *   durationMin: number, joinUrl: string, zoomMeetingId: string|null,
+ *   host: string, source: 'zoom'|'manual', createdBy: string|null,
+ *   createdAt: string, updatedAt: string
+ * }>}
+ */
+export const seedSessions = [
+  {
+    id: "sess-seed-1",
+    title: "Capacitación: fundamentos de IA aplicada",
+    description: "Sesión introductoria del temario de capacitaciones.",
+    startsAt: daysFromNow(1),
+    durationMin: 60,
+    joinUrl: "https://us02web.zoom.us/j/123456789",
+    zoomMeetingId: "123456789",
+    host: "cp-roberto",
+    source: "zoom",
+    createdBy: "cp-roberto",
+    createdAt: daysAgo(2),
+    updatedAt: daysAgo(2),
+  },
+  {
+    id: "sess-seed-2",
+    title: "Reunión de seguimiento con AMCP",
+    description: "Revisión de programa, temario y documentos pendientes.",
+    startsAt: daysFromNow(3),
+    durationMin: 90,
+    joinUrl: "https://us02web.zoom.us/j/123456790",
+    zoomMeetingId: null,
+    host: "cp-blake",
+    source: "manual",
+    createdBy: "cp-blake",
+    createdAt: daysAgo(1),
+    updatedAt: daysAgo(1),
+  },
+  {
+    id: "sess-seed-3",
+    title: "Demo de plataforma para CP Herrera",
+    description: "Demostración de la plataforma aiLearning y alianza.",
+    startsAt: daysFromNow(7),
+    durationMin: 60,
+    joinUrl: "https://us02web.zoom.us/j/123456791",
+    zoomMeetingId: null,
+    host: "jeshua",
+    source: "manual",
+    createdBy: "jeshua",
+    createdAt: daysAgo(0),
+    updatedAt: daysAgo(0),
+  },
 ];

@@ -8,7 +8,7 @@
 //
 // Storage key: "ail_ops_v3" (distinct from the legacy panel's
 // "ail_ops_v2" — see `importExport.js` for migrating v2 data in).
-import { seedFronts, seedMembers, seedActivities, seedEvents } from "./seedData.js";
+import { seedFronts, seedMembers, seedActivities, seedEvents, seedSessions } from "./seedData.js";
 
 const KEY = "ail_ops_v3";
 
@@ -25,7 +25,11 @@ function loadState() {
     const raw = localStorage.getItem(KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (parsed && Array.isArray(parsed.activities)) return parsed;
+      if (parsed && Array.isArray(parsed.activities)) {
+        // older persisted states predate `sessions` — backfill with seed data
+        if (!Array.isArray(parsed.sessions)) parsed.sessions = structuredClone(seedSessions);
+        return parsed;
+      }
     }
   } catch (e) {
     // eslint-disable-next-line no-console
@@ -36,6 +40,7 @@ function loadState() {
     members: structuredClone(seedMembers),
     activities: structuredClone(seedActivities),
     events: structuredClone(seedEvents),
+    sessions: structuredClone(seedSessions),
   };
 }
 
@@ -324,6 +329,61 @@ export async function addEvent(event) {
   persist();
   emit("events", "insert");
   return structuredClone(entry);
+}
+
+// --------------------------------------------------------------- sessions
+/**
+ * @param {{limit?: number}} [opts]
+ * @returns {Promise<object[]>} upcoming Zoom/manual sessions (includes a
+ *   2h grace window into the past, so in-progress sessions still show)
+ */
+export async function listSessions({ limit = 20 } = {}) {
+  const cutoff = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
+  const sessions = state.sessions
+    .filter((s) => s.startsAt >= cutoff)
+    .sort((a, b) => a.startsAt.localeCompare(b.startsAt))
+    .slice(0, limit);
+  return structuredClone(sessions);
+}
+
+/**
+ * @param {object} data - title, description?, startsAt, durationMin?, joinUrl?,
+ *   host?, source?, createdBy?
+ */
+export async function createSession(data) {
+  const session = {
+    id: uid("sess"),
+    title: data.title,
+    description: data.description || "",
+    startsAt: data.startsAt,
+    durationMin: data.durationMin ?? null,
+    joinUrl: data.joinUrl || null,
+    zoomMeetingId: data.zoomMeetingId || null,
+    host: data.host || "",
+    source: data.source || "manual",
+    createdBy: data.createdBy || null,
+    createdAt: nowISO(),
+    updatedAt: nowISO(),
+  };
+  state.sessions.push(session);
+  persist();
+  emit("sessions", "INSERT");
+  return structuredClone(session);
+}
+
+export async function updateSession(id, patch) {
+  const session = state.sessions.find((s) => s.id === id);
+  if (!session) throw new Error(`Sesión no encontrada: ${id}`);
+  Object.assign(session, patch, { updatedAt: nowISO() });
+  persist();
+  emit("sessions", "UPDATE");
+  return structuredClone(session);
+}
+
+export async function deleteSession(id) {
+  state.sessions = state.sessions.filter((s) => s.id !== id);
+  persist();
+  emit("sessions", "DELETE");
 }
 
 // ---------------------------------------------------------- raw access

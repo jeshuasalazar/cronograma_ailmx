@@ -12,6 +12,8 @@
 //   activity_assignees(activity_id, team_member_id, assigned_at)
 //   activity_notes(id, activity_id, author_id, body, created_at)
 //   activity_events(id, activity_id, actor_id, kind, payload jsonb, created_at)
+//   sessions(id, title, description, starts_at, duration_min, join_url,
+//     zoom_meeting_id, host, source, created_by, created_at, updated_at)
 //
 // `status` values: todo|prog|wait|done (unchanged from the legacy panel).
 // `priority` values: low|medium|high|urgent (NEW column — legacy panel had none).
@@ -76,6 +78,23 @@ function mapEvent(row) {
     kind: row.kind,
     payload: row.payload || {},
     createdAt: row.created_at,
+  };
+}
+
+function mapSession(row) {
+  return {
+    id: row.id,
+    title: row.title,
+    description: row.description || "",
+    startsAt: row.starts_at,
+    durationMin: row.duration_min ?? null,
+    joinUrl: row.join_url || null,
+    zoomMeetingId: row.zoom_meeting_id || null,
+    host: row.host || "",
+    source: row.source || "manual",
+    createdBy: row.created_by || null,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
   };
 }
 
@@ -365,6 +384,75 @@ export async function addEvent(event) {
   return mapEvent(row);
 }
 
+// --------------------------------------------------------------- sessions
+/**
+ * @param {{limit?: number}} [opts]
+ * @returns {Promise<object[]>} upcoming Zoom/manual sessions (includes a
+ *   2h grace window into the past, so in-progress sessions still show)
+ */
+export async function listSessions({ limit = 20 } = {}) {
+  const cutoff = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
+  const { data, error } = await supabase
+    .from("sessions")
+    .select("*")
+    .gte("starts_at", cutoff)
+    .order("starts_at", { ascending: true })
+    .limit(limit);
+  throwIfError(error, "listSessions");
+  return data.map(mapSession);
+}
+
+/**
+ * @param {object} data - title, description?, startsAt, durationMin?, joinUrl?,
+ *   host?, source?, createdBy?
+ */
+export async function createSession(data) {
+  const { data: row, error } = await supabase
+    .from("sessions")
+    .insert({
+      title: data.title,
+      description: data.description || "",
+      starts_at: data.startsAt,
+      duration_min: data.durationMin ?? null,
+      join_url: data.joinUrl || null,
+      host: data.host || null,
+      source: data.source || "manual",
+      created_by: data.createdBy || null,
+    })
+    .select()
+    .single();
+  throwIfError(error, "createSession");
+  return mapSession(row);
+}
+
+export async function updateSession(id, patch) {
+  const dbPatch = { ...patch, updated_at: new Date().toISOString() };
+  if ("startsAt" in dbPatch) {
+    dbPatch.starts_at = dbPatch.startsAt;
+    delete dbPatch.startsAt;
+  }
+  if ("durationMin" in dbPatch) {
+    dbPatch.duration_min = dbPatch.durationMin;
+    delete dbPatch.durationMin;
+  }
+  if ("joinUrl" in dbPatch) {
+    dbPatch.join_url = dbPatch.joinUrl;
+    delete dbPatch.joinUrl;
+  }
+  if ("zoomMeetingId" in dbPatch) {
+    dbPatch.zoom_meeting_id = dbPatch.zoomMeetingId;
+    delete dbPatch.zoomMeetingId;
+  }
+  const { data: row, error } = await supabase.from("sessions").update(dbPatch).eq("id", id).select().single();
+  throwIfError(error, "updateSession");
+  return mapSession(row);
+}
+
+export async function deleteSession(id) {
+  const { error } = await supabase.from("sessions").delete().eq("id", id);
+  throwIfError(error, "deleteSession");
+}
+
 // ------------------------------------------------------------- realtime
 /**
  * Subscribe to Realtime changes on activities/activity_assignees/
@@ -391,6 +479,9 @@ export function subscribe(cb) {
     )
     .on("postgres_changes", { event: "*", schema: "public", table: "activity_events" }, (payload) =>
       cb({ table: "events", type: payload.eventType }),
+    )
+    .on("postgres_changes", { event: "*", schema: "public", table: "sessions" }, (payload) =>
+      cb({ table: "sessions", type: payload.eventType }),
     )
     .subscribe();
 

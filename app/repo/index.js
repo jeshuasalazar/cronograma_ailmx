@@ -48,6 +48,15 @@
 //   addEvent(event: {activityId, actorId?, kind, payload?}): Promise<Event>
 //     - manual/custom event; the auto-logged kinds above cover the common cases
 //
+//   listSessions(opts?: {limit?: number}): Promise<Session[]>
+//     - upcoming Zoom/manual sessions, ordered by startsAt ascending
+//       (includes a 2h grace window into the past so in-progress
+//       sessions still show)
+//   createSession(data: {title, description?, startsAt, durationMin?,
+//     joinUrl?, zoomMeetingId?, host?, source?, createdBy?}): Promise<Session>
+//   updateSession(id, patch): Promise<Session>
+//   deleteSession(id): Promise<void>
+//
 //   subscribe(cb: (change: {table: string, type: string}) => void): () => void
 //
 // Shapes (camelCase, identical from both backends — 1:1 with the SQL
@@ -61,6 +70,9 @@
 //                notes: Note[], createdAt, updatedAt }
 //   Note     = { id, activityId, body, authorId, createdAt }
 //   Event    = { id, activityId, activityTitle, actorId, actorName, kind, payload, createdAt }
+//   Session  = { id, title, description, startsAt, durationMin, joinUrl,
+//                zoomMeetingId, host, source: 'zoom'|'manual', createdBy,
+//                createdAt, updatedAt }
 // -------------------------------------------------------------------
 import { isDemoMode } from "../supabaseClient.js";
 import * as localRepo from "./localRepo.js";
@@ -90,5 +102,9 @@ export const {
   deleteNote,
   listEvents,
   addEvent,
+  listSessions,
+  createSession,
+  updateSession,
+  deleteSession,
   subscribe,
 } = repo;

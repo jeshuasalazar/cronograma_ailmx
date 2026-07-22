@@ -18,6 +18,7 @@ import { mountNewActivityModal } from "./ui/newActivityModal.js";
 import { mountTeamAdmin } from "./ui/teamAdmin.js";
 import { mountFronts } from "./ui/fronts.js";
 import { mountTeam } from "./ui/team.js";
+import { mountSessions } from "./ui/sessions.js";
 import { mountFeed } from "./ui/feed.js";
 import { icon } from "./ui/icons.js";
 
@@ -91,6 +92,10 @@ function shellHTML() {
             <div class="team" id="team-slot"></div>
           </div>
           <div class="panel">
+            <div class="head"><h2>Próximas sesiones</h2><span class="cnt" id="sessions-cnt"></span></div>
+            <div class="sessions" id="sessions-slot"></div>
+          </div>
+          <div class="panel">
             <div class="head">
               <h2><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);animation:beat 1.8s infinite"></span>Actividad reciente</h2>
               <span class="cnt" id="feed-cnt"></span>
@@ -135,8 +140,9 @@ function mapChangeToInvalidation(change) {
   // notes → detail (embedded notes array) + feed.
   if (table === "notes") return ["activities", "events"];
   if (table === "events") return ["events"];
+  if (table === "sessions") return ["sessions"];
   // "*" — cross-tab localStorage sync or a bulk import: refresh everything.
-  return ["fronts", "members", "activities", "events"];
+  return ["fronts", "members", "activities", "events", "sessions"];
 }
 
 function mountPanel(session, me) {
@@ -179,6 +185,7 @@ function mountPanel(session, me) {
 
   sideUnmounts.push(mountFronts(document.getElementById("fronts-slot"), ctx));
   sideUnmounts.push(mountTeam(document.getElementById("team-slot"), document.getElementById("team-cnt"), ctx));
+  sideUnmounts.push(mountSessions(document.getElementById("sessions-slot"), document.getElementById("sessions-cnt"), ctx));
   sideUnmounts.push(mountFeed(document.getElementById("feed-slot"), document.getElementById("feed-cnt")));
   sideUnmounts.push(() => filtersApi.destroy());
 

@@ -255,6 +255,19 @@ button{ touch-action:manipulation }
 .tmember .load .ll{ font-family:'JetBrains Mono',monospace; font-size:8px; color:var(--mute); letter-spacing:.06em; text-transform:uppercase }
 .admin-pill{ font-family:'JetBrains Mono',monospace; font-size:7.5px; letter-spacing:.06em; padding:1px 5px; border-radius:5px; background:color-mix(in oklab, var(--amber) 15%, transparent); color:var(--amber); border:1px solid color-mix(in oklab, var(--amber) 30%, transparent) }
 
+/* Sessions ("Próximas sesiones" sidebar panel) */
+.sessions{ padding:6px 8px }
+.sess-item{ display:flex; align-items:center; gap:12px; padding:11px 12px; border-radius:12px; transition:background .15s }
+.sess-item:hover{ background:var(--glass-2) }
+.sess-item .daybadge{ width:38px; height:38px; border-radius:10px }
+.sess-item .daybadge .dd{ font-size:15px }
+.sess-main{ flex:1; min-width:0 }
+.sess-title{ font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:13px; display:flex; align-items:center; gap:7px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+.sess-meta{ font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--mute); letter-spacing:.04em; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+.sess-live{ font-family:'JetBrains Mono',monospace; font-size:7.5px; letter-spacing:.06em; padding:1px 5px; border-radius:5px; background:color-mix(in oklab, var(--green) 15%, transparent); color:var(--green); border:1px solid color-mix(in oklab, var(--green) 30%, transparent); flex:none }
+.sess-actions{ display:flex; align-items:center; gap:6px; flex:none }
+.sess-join{ text-decoration:none; padding:6px 12px; min-height:0 }
+
 /* Feed */
 .feed{ padding:6px 20px 18px; max-height:420px; overflow-y:auto }
 .fevent{ position:relative; padding:12px 0 12px 22px; border-left:1px solid var(--stroke) }
