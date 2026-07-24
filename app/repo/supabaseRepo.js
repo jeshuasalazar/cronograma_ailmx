@@ -453,6 +453,20 @@ export async function deleteSession(id) {
   throwIfError(error, "deleteSession");
 }
 
+/**
+ * Dispara la Edge Function `zoom-sync` para refrescar `sessions` desde Zoom
+ * en el momento (page-open sync). Usa la sesión autenticada del usuario
+ * (supabase-js adjunta el JWT). Best-effort: los errores se propagan para
+ * que el caller decida, pero la UI los ignora (los datos de la DB ya se
+ * muestran y el cron/webhook cubren el resto).
+ * @returns {Promise<{synced?: number, deleted?: number, skipped?: boolean}>}
+ */
+export async function syncSessions() {
+  const { data, error } = await supabase.functions.invoke("zoom-sync", { body: {} });
+  if (error) throw new Error(`[aiLearning] supabaseRepo syncSessions: ${error.message}`);
+  return data || {};
+}
+
 // ------------------------------------------------------------- realtime
 /**
  * Subscribe to Realtime changes on activities/activity_assignees/

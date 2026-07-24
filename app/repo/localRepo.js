@@ -386,6 +386,11 @@ export async function deleteSession(id) {
   emit("sessions", "DELETE");
 }
 
+/** Sin Zoom en modo demo: no-op para paridad de interfaz con supabaseRepo. */
+export async function syncSessions() {
+  return { skipped: true, reason: "demo" };
+}
+
 // ---------------------------------------------------------- raw access
 // Used by importExport.js to read/replace the whole local dataset.
 export function _getRawState() {

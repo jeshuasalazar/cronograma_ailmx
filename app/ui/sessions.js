@@ -5,7 +5,7 @@
 // modal (appended to <body>, like toast.js's host) instead of a dedicated
 // shell slot, since only sessions.js/main.js/styles.css are in scope here.
 import { getQuery, mutate } from "../store.js";
-import { listSessions, createSession, updateSession, deleteSession } from "../repo/index.js";
+import { listSessions, createSession, updateSession, deleteSession, syncSessions } from "../repo/index.js";
 import { escapeHtml, dayBadge } from "./format.js";
 import { toastOk, toastError, friendlyError } from "./toast.js";
 import { icon } from "./icons.js";
@@ -216,6 +216,19 @@ export function mountSessions(root, countEl, ctx) {
 
   render();
   const unsub = sessionsQuery.subscribe(render);
+
+  // Page-open sync: al abrir el panel, refresca `sessions` desde Zoom en el
+  // momento (además del webhook de Zoom en cambios y del cron cada 15 min).
+  // Best-effort: si Zoom/la función fallan, la card sigue mostrando lo que
+  // ya hay en la DB.
+  if (!ctx.isDemoMode) {
+    syncSessions()
+      .then((res) => {
+        if (res && (res.synced || res.deleted)) sessionsQuery.refetch();
+      })
+      .catch(() => {});
+  }
+
   return () => {
     unsub();
     document.removeEventListener("keydown", onKeydown);

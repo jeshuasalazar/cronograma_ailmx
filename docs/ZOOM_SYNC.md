@@ -128,3 +128,31 @@ Respuestas esperadas:
 - El endpoint de la función (`/functions/v1/zoom-sync`) requiere el header
   `Authorization` (anon key o service role key) como cualquier Edge Function
   de Supabase; no expone las credenciales de Zoom en ninguna respuesta.
+
+---
+
+## Actualización en tiempo real (webhook de Zoom) — función `zoom-webhook`
+
+Además del cron cada 15 min y del sync al abrir la página, la función
+`supabase/functions/zoom-webhook/index.ts` re-sincroniza al instante cuando
+Zoom notifica un cambio de reunión. Está desplegada con `verify_jwt=false`
+(Zoom no manda JWT de Supabase) y valida con el **Secret Token** de Zoom
+(secret `ZOOM_SECRET_TOKEN`).
+
+### Configurar el Event Subscription en la app de Zoom
+
+1. Marketplace → tu app **Server-to-Server OAuth** → pestaña **Feature** →
+   activa **Event Subscriptions** → **Add Event Subscription**.
+2. **Event notification endpoint URL**:
+   `https://hfffaxjfcpgvbtlgyfgn.supabase.co/functions/v1/zoom-webhook`
+3. Pulsa **Validate** — Zoom envía el handshake `endpoint.url_validation` y la
+   función responde el `encryptedToken` (HMAC-SHA256 con el Secret Token). Debe
+   validar en verde.
+4. **Add Events** → grupo **Meeting** → marca *Meeting Created / Updated /
+   Deleted / Started / Ended* (los que te interesen).
+5. **Save** y vuelve a **Activation** para re-activar la app si lo pide.
+
+El **Secret Token** de la app (Marketplace → tu app → *Feature* /
+*Basic Information*) debe coincidir con el secret `ZOOM_SECRET_TOKEN` ya
+configurado en las Edge Functions. Si lo regeneras en Zoom, actualiza el
+secret con `supabase secrets set ZOOM_SECRET_TOKEN=...`.

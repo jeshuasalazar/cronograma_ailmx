@@ -106,5 +106,6 @@ export const {
   createSession,
   updateSession,
   deleteSession,
+  syncSessions,
   subscribe,
 } = repo;
